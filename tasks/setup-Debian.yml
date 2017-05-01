@@ -1,0 +1,8 @@
+---
+- name: Enable smartd on system startup (default file)
+  lineinfile:
+    dest: /etc/default/smartmontools
+    regexp: "^start_smartd="
+    line: "start_smartd=yes"
+  notify: ['restart smartd']
+  tags: ['smartd']

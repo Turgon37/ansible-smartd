@@ -1,0 +1,36 @@
+---
+# SMARTD configuration
+# --------------------------------
+
+# the name of packages to install
+smartd__packages_names:
+  - smartmontools
+
+# The name of the smartd systemd service
+smartd__service_name: smartd
+
+# The email address for SMARTD notification
+smartd__email: root
+
+# Optionnal additionals options to pass to smartd daemon
+smartd__options: --interval=1800
+
+# Don't touch the content of this var
+smartd__devices: {}
+
+# If true, a test email will be send on smartd boot
+smartd__test_email: false
+
+# Enable short test
+smartd__short_test: false
+smartd__short_test_month: '..'
+smartd__short_test_dom: '..'
+smartd__short_test_dow: 'random'
+smartd__short_test_hour: 'random'
+
+# Enable long test
+smartd__long_test: false
+smartd__long_test_month: '..'
+smartd__long_test_dom: '..'
+smartd__long_test_dow: '.'
+smartd__long_test_hour: 'random'

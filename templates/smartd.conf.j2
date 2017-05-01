@@ -1,0 +1,27 @@
+#
+# {{ ansible_managed }}
+#
+
+{% for disk, spec in smartd__devices | dictsort %}
+{%   set _smartd__test = [] %}
+{%   if smartd__short_test %}
+{%     if smartd__short_test_dow == "random" %}
+{%       set smartd__long_test_dow = range(1,8)|random %}
+{%     endif %}
+{%     if smartd__short_test_hour == "random" %}
+{%       set smartd__short_test_hour = "{0:02d}".format((range(1,24)|random)) %}
+{%     endif %}
+{%     set _smartd__test = _smartd__test + ['S/' + smartd__short_test_month + '/' + smartd__short_test_dom + '/' + smartd__short_test_dow + '/' + smartd__short_test_hour] %}
+{%   endif %}
+{%   if smartd__long_test %}
+{%     if smartd__long_test_hour == "random" %}
+{%       set smartd__long_test_hour = "{0:02d}".format((range(1,24)|random)) %}
+{%     endif %}
+{%     set _smartd__test = _smartd__test + ['L/' + smartd__long_test_month + '/' + smartd__long_test_dom + '/' + smartd__long_test_dow + '/' + smartd__long_test_hour] %}
+{%   endif %}
+{{ disk }} -a -o on -S on -m {{ smartd__email }} {% if _smartd__test|length > 0 %}-s ({{ _smartd__test|join('|') }}){% endif %}
+{%   if smartd__test_email %}
+{{ disk }} -m {{ smartd__email }} -M test
+{%   endif %}
+
+{% endfor %}

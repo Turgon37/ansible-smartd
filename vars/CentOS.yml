@@ -1,0 +1,4 @@
+---
+# vars file for smartd (CentOS specific)
+
+smartd__service_env: /etc/sysconfig/smartmontools
