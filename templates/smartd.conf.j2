@@ -2,7 +2,7 @@
 # {{ ansible_managed }}
 #
 
-{% for disk, spec in smartd__devices | dictsort %}
+{% for disk, spec in _smartd__devices|dictsort %}
 {%   set _smartd__test = [] %}
 {%   if smartd__short_test %}
 {%     if smartd__short_test_dow == "random" %}
