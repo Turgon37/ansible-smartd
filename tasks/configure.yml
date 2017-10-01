@@ -23,7 +23,7 @@
   lineinfile:
     dest: '{{ smartd__service_env_file }}'
     regexp: "^smartd_opts="
-    line: "smartd_opts='{{ smartd__options if smartd__options is string else smartd__options.join(' ') }}'"
+    line: 'smartd_opts="{{ smartd__options if smartd__options is string else smartd__options.join(" ") }}"'
   notify: ['restart-smartd']
 
 - name: Enable smartd on system startup (Debian)
