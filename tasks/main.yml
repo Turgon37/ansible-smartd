@@ -1,75 +1,19 @@
 ---
+# tasks file for smartd
+
 - name: Include the OS specific variables
   include_vars: "{{ item }}"
   with_first_found:
     - files:
+        - "{{ ansible_distribution }}-{{ ansible_distribution_version }}.yml"
         - "{{ ansible_distribution }}.yml"
         - "{{ ansible_os_family }}.yml"
+        - "defaults.yml"
       skip: true
-  tags: ['smartd']
+  tags: ['always']
 
-- name: Install the latest version of smartd packages
-  package:
-    name: '{{ item }}'
-    state: latest
-  with_items:
-    - "{{ smartd__packages_names }}"
-  tags: ['smartd']
+- import_tasks: install.yml
+  tags: ['smartd', 'smartd-install']
 
-- name: Check disk for SMART supports
-  shell: "smartctl --info /dev/{{ item }}"
-  with_items: '{{ ansible_devices.keys() }}'
-  register: _smartd__devices
-  ignore_errors: True
-  changed_when: false
-  check_mode: no
-  tags: ['smartd']
-
-- name: Register facts for available disks with SMART support
-  set_fact:
-    smartd__devices: "{{ smartd__devices|d({}) | combine( {'/dev/' + item.1: _smartd__devices.results[item.0].stdout} ) }}"
-  with_indexed_items: '{{ ansible_devices.keys() }}'
-  when: "_smartd__devices.results[item.0] | success and _smartd__devices.results[item.0].stdout | search('SMART support is: Available')"
-  tags: ['smartd']
-
-- name: Enable SMART for disks which support it
-  shell: "smartctl -s on {{ item }}"
-  with_items: '{{ smartd__devices.keys() }}'
-  when: "not smartd__devices[item] | search('SMART support is: Enabled')"
-  tags: ['smartd']
-
-- name: Create smartd configuration file
-  template:
-    src: smartd.conf.j2
-    dest: /etc/smartd.conf
-    owner: root
-    group: root
-    mode: 0644
-  notify: ['restart smartd']
-  tags: ['smartd']
-
-- name: pass additional options to smartd on startup (default file)
-  lineinfile:
-    dest: '{{ smartd__service_env }}'
-    regexp: "^smartd_opts="
-    line: 'smartd_opts="{{ smartd__options if smartd__options is string else smartd__options.join(" ") }}"'
-  notify: ['restart smartd']
-  tags: ['smartd']
-
-- name: Include the OS specific setup tasks
-  include: "{{ item }}"
-  with_first_found:
-    - files:
-        - "setup-{{ ansible_distribution }}.yml"
-        - "setup-{{ ansible_os_family }}.yml"
-      skip: true
-  tags: ['smartd']
-
-- name: Ensure smartd is started and enabled on boot
-  become: yes
-  service:
-    name: "{{ smartd__service_name }}"
-    state: started
-    enabled: yes
-  changed_when: False
-  tags: ['smartd']
+- import_tasks: configure.yml
+  tags: ['smartd', 'smartd-configure']

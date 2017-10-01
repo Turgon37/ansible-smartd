@@ -1,0 +1,44 @@
+---
+
+- name: Check disk for SMART supports
+  command: 'smartctl --info /dev/{{ item }}'
+  with_items: '{{ ansible_devices.keys() }}'
+  register: _smartd__devices_test_support
+  ignore_errors: True
+  changed_when: false
+  check_mode: no
+
+- name: Register facts for available disks with SMART support
+  set_fact:
+    _smartd__devices: "{{ _smartd__devices|d({}) | combine( {'/dev/' + item.1: _smartd__devices_test_support.results[item.0].stdout} ) }}"
+  with_indexed_items: '{{ ansible_devices.keys() }}'
+  when: "_smartd__devices_test_support.results[item.0] | success and _smartd__devices_test_support.results[item.0].stdout | search('SMART support is: Available')"
+
+- name: Enable SMART for disks which support it
+  command: "smartctl -s on {{ item }}"
+  with_items: '{{ _smartd__devices.keys() }}'
+  when: "not _smartd__devices[item]|search('SMART support is: Enabled')"
+
+- name: Add additional options to smartd on startup
+  lineinfile:
+    dest: '{{ smartd__service_env_file }}'
+    regexp: "^smartd_opts="
+    line: "smartd_opts='{{ smartd__options if smartd__options is string else smartd__options.join(' ') }}'"
+  notify: ['restart-smartd']
+
+- name: Enable smartd on system startup (Debian)
+  lineinfile:
+    dest: '{{ smartd__service_env_file }}'
+    regexp: "^start_smartd="
+    line: "start_smartd=yes"
+  when: ansible_os_family == 'Debian'
+  notify: ['restart smartd']
+
+- name: Create smartd configuration file
+  template:
+    src: smartd.conf.j2
+    dest: /etc/smartd.conf
+    owner: root
+    group: root
+    mode: 0644
+  notify: ['restart-smartd']

@@ -1,4 +1,4 @@
 ---
 # vars file for smartd (Debian specific)
 
-smartd__service_env: /etc/default/smartmontools
+smartd__service_env_file: /etc/default/smartmontools

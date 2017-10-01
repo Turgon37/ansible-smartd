@@ -1,6 +1,5 @@
 ---
-# SMARTD configuration
-# --------------------------------
+# defaults file for smartd
 
 # the name of packages to install
 smartd__packages_names:
@@ -14,9 +13,6 @@ smartd__email: root
 
 # Optionnal additionals options to pass to smartd daemon
 smartd__options: --interval=1800
-
-# Don't touch the content of this var
-smartd__devices: {}
 
 # If true, a test email will be send on smartd boot
 smartd__test_email: false
@@ -34,3 +30,6 @@ smartd__long_test_month: '..'
 smartd__long_test_dom: '..'
 smartd__long_test_dow: '.'
 smartd__long_test_hour: 'random'
+
+# Working values
+_smartd__devices: {}

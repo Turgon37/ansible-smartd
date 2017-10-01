@@ -1,5 +1,7 @@
 ---
-- name: restart smartd
+# handlers file for smartd
+
+- name: restart-smartd
   service:
     name: '{{ smartd__service_name }}'
     state: restarted

@@ -1,0 +1,7 @@
+---
+
+- name: Install smartd packages
+  package:
+    name: '{{ item }}'
+    state: present
+  with_items: '{{ smartd__packages_names }}'

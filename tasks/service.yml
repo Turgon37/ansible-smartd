@@ -1,0 +1,7 @@
+---
+
+- name: Ensure smartd is started and enabled on boot
+  service:
+    name: "{{ smartd__service_name }}"
+    enabled: yes
+    state: started
