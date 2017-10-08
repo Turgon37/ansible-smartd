@@ -4,7 +4,7 @@
   command: 'smartctl --info /dev/{{ item }}'
   with_items: '{{ ansible_devices.keys() }}'
   register: _smartd__devices_test_support
-  ignore_errors: True
+  failed_when: false
   changed_when: false
   check_mode: no
 
