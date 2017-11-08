@@ -32,7 +32,7 @@
     regexp: "^start_smartd="
     line: "start_smartd=yes"
   when: ansible_os_family == 'Debian'
-  notify: ['restart smartd']
+  notify: ['restart-smartd']
 
 - name: Create smartd configuration file
   template:
