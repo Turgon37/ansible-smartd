@@ -20,6 +20,7 @@
 {%     set _smartd__test = _smartd__test + ['L/' + smartd__long_test_month + '/' + smartd__long_test_dom + '/' + smartd__long_test_dow + '/' + smartd__long_test_hour] %}
 {%   endif %}
 {{ disk }} -a -o on -S on -m {{ smartd__email }} {% if _smartd__test|length > 0 %}-s ({{ _smartd__test|join('|') }}){% endif %}
+
 {%   if smartd__test_email %}
 {{ disk }} -m {{ smartd__email }} -M test
 {%   endif %}
