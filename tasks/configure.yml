@@ -4,20 +4,20 @@
   command: 'smartctl --info /dev/{{ item }}'
   with_items: '{{ ansible_devices.keys() }}'
   register: _smartd__devices_test_support
-  failed_when: false
-  changed_when: false
-  check_mode: no
+  failed_when: False
+  changed_when: False
+  check_mode: False
 
 - name: Register facts for available disks with SMART support
   set_fact:
     _smartd__devices: "{{ _smartd__devices|d({}) | combine( {'/dev/' + item.1: _smartd__devices_test_support.results[item.0].stdout} ) }}"
   with_indexed_items: '{{ ansible_devices.keys() }}'
-  when: "_smartd__devices_test_support.results[item.0] | success and _smartd__devices_test_support.results[item.0].stdout | search('SMART support is: Available')"
+  when: "_smartd__devices_test_support.results[item.0] is success and _smartd__devices_test_support.results[item.0].stdout is search('SMART support is: Available')"
 
 - name: Enable SMART for disks which support it
   command: "smartctl -s on {{ item }}"
   with_items: '{{ _smartd__devices.keys() }}'
-  when: "not _smartd__devices[item]|search('SMART support is: Enabled')"
+  when: "not _smartd__devices[item] is search('SMART support is: Enabled')"
 
 - name: Add additional options to smartd on startup
   lineinfile:
